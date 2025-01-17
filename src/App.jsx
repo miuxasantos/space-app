@@ -17,7 +17,7 @@ const FundoGrad = styled.div`
 
 const AppContainer = styled.div`
   width: 1440px;
-  margin: 0 auto;  
+  margin: 0 auto;
   max-width: 100%;
 `
 
@@ -35,6 +35,24 @@ const App = () => {
   const [fotosDaGaleria, setFotosDaGaleria] = useState(fotos)
   const [fotoSelecionada, setFotoSelecionada] = useState(null)
 
+  const aoAlternarFavorito = (foto) => {
+    if (foto.id === fotoSelecionada?.id){
+      setFotoSelecionada({
+        ...fotoSelecionada,
+        favorita: !fotoSelecionada.favorita
+      })
+    }
+
+    setFotosDaGaleria(fotosDaGaleria.map(fotoDaGaleria => {
+      return {
+        ...fotoDaGaleria,
+        favorita: fotoDaGaleria.id === foto.id ? !foto.favorita : fotoDaGaleria.favorita
+      }
+
+    }))
+  }
+
+
   return (
     <FundoGrad>
       <EstilosGlobais />
@@ -47,11 +65,19 @@ const App = () => {
             texto="A galeria mais completa de fotos do espaço!"
             backgroungImage={bannerBackground}
             />
-            <Galeria aoFotoSelecionada={ foto => setFotoSelecionada(foto)} fotos={fotosDaGaleria}/>
+            <Galeria 
+              aoFotoSelecionada={ foto => setFotoSelecionada(foto)} 
+              fotos={fotosDaGaleria}
+              aoAlternarFavorito={aoAlternarFavorito}
+              />
           </ConteudoGaleria>
         </MainContainer>
       </AppContainer>
-      <ModalZoom foto={fotoSelecionada} />
+      <ModalZoom 
+        foto={fotoSelecionada}
+        aoFechar={() => setFotoSelecionada(null)}
+        aoAlternarFavorito={aoAlternarFavorito}
+      />
     </FundoGrad>
   )
 }
