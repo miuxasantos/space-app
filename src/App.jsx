@@ -6,7 +6,7 @@ import bannerBackground from './assets/banner.png'
 import Banner from "./componentes/Banner"
 import Galeria from "./componentes/Galeria"
 import fotos from "./fotos.json"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import ModalZoom from "./componentes/ModalZoom"
 
 const FundoGrad = styled.div`
@@ -34,6 +34,18 @@ const ConteudoGaleria = styled.section`
 const App = () => {
   const [fotosDaGaleria, setFotosDaGaleria] = useState(fotos)
   const [fotoSelecionada, setFotoSelecionada] = useState(null)
+  const [filtro, setFiltro] = useState('')
+  const [tag, setTag] = useState(0)
+  
+
+  useEffect(() => {
+    const fotosFiltradas = fotos.filter(foto => {
+      const filtroPorTag = !tag || foto.tagId === tag;
+      const filtroPorTitulo = !filtro || foto.titulo.toLowerCase().includes(filtro.toLowerCase())
+      return filtroPorTag && filtroPorTitulo
+    })
+    setFotosDaGaleria(fotosFiltradas)
+  }, [filtro, tag])
 
   const aoAlternarFavorito = (foto) => {
     if (foto.id === fotoSelecionada?.id){
@@ -57,7 +69,10 @@ const App = () => {
     <FundoGrad>
       <EstilosGlobais />
       <AppContainer>
-        <Cabecalho />
+        <Cabecalho 
+          filtro={filtro}
+          setFiltro={setFiltro}  
+        />
         <MainContainer>
           <BarraLateral />
             <ConteudoGaleria>
@@ -69,7 +84,8 @@ const App = () => {
               aoFotoSelecionada={ foto => setFotoSelecionada(foto)} 
               fotos={fotosDaGaleria}
               aoAlternarFavorito={aoAlternarFavorito}
-              />
+              setTag={setTag}
+            />
           </ConteudoGaleria>
         </MainContainer>
       </AppContainer>
